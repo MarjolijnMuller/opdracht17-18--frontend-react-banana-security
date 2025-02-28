@@ -1,4 +1,4 @@
-import {createContext, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
 export const AuthContext = createContext({});
@@ -10,12 +10,36 @@ function AuthContextProvider({children}) {
     });
     const navigate = useNavigate();
 
-    function login() {
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token && isTokenValid(token)) {
+            //log de gebruiker opnieuw in
+            void login(token)
+        } else {
+            setAuth({
+                isAuth: false,
+                user: null,
+                status: 'done'
+            });
+        }
+    }, [])
+
+    async function login(token) {
+        localStorage.setItem('token', token);
+
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken.sub);
         console.log("Gebruiker is ingelogd");
         toggleIsAuth({
             isAuth: true,
-            user: null,});
-        /*!!*/
+            user: {
+                usernam: response.data.username,
+                email: response.data.email,
+                id: response.data.id,
+                role: 'user'
+            },
+        });
         navigate('/profile');
     };
 

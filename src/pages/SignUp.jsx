@@ -1,5 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Link } from 'react-router-dom';
+import axios from "axios";
+import {useNavigate} from 'react-router-dom';
+import {AuthContext} from "../context/AuthContext";
 
 function SignUp() {
     const [formState, setFormState] = React.useState({
@@ -7,6 +10,8 @@ function SignUp() {
         email: '',
         password: '',
     })
+    const {login} = useContext(AuthContext);
+    const navigate = useNavigate();
 
     function handleChange(e) {
         const changedFieldName = e.target.name;
@@ -19,6 +24,7 @@ function SignUp() {
 
     async function onFormSubmit(e) {
         e.preventDefault();
+        console.log(formState);
         try {
             const response = await axios.post('http://localhost:3000/register', {
                 email: formState.email,
@@ -26,7 +32,8 @@ function SignUp() {
                 username: formState.username,
             });
             console.log(response.data);
-
+            login(response.data.accesToken);
+            navigate("/signin");
         } catch (error) {
             console.log(error);
         }
@@ -41,7 +48,7 @@ function SignUp() {
         <form onSubmit={onFormSubmit}
               className="signup-form">
             <label htmlFor="username">
-                Titel:
+                Username:
                 <input
                     type="text"
                     id="username"
@@ -50,7 +57,7 @@ function SignUp() {
                     required/>
             </label>
             <label htmlFor="email">
-                Titel:
+                Email:
                 <input
                     type="text"
                     id="email"
@@ -59,7 +66,7 @@ function SignUp() {
                     required/>
             </label>
             <label htmlFor="password">
-                Titel:
+                Password:
                 <input
                     type="password"
                     id="password"
@@ -67,6 +74,7 @@ function SignUp() {
                     onChange={handleChange}
                     required/>
             </label>
+            <button type="submit">Submit</button>
         </form>
         <p>Heb je al een account? Je kunt je <Link to="/signin">hier</Link> inloggen.</p>
     </>
