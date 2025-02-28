@@ -1,13 +1,23 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import axios from "axios";
 
 function SignIn() {
     const { login } = useContext(AuthContext);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        login();
+        try {
+            const response = await axios.post('http://localhost:3000/login', {
+                email: "klaas@novi.nl",
+                password: "123456",
+            })
+            console.log(response);
+            login(response.data.accessToken);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return (
